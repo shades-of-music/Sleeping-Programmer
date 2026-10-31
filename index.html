@@ -1,0 +1,177 @@
+/* index.html */
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Coder Sleeping at Desk</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap'); 
+        @import url('https://fonts.cdnfonts.com/css/times-new-roman');
+        body { background: #1e1e1e; color: white; text-align: center; font-family: Space Mono; }
+        canvas { background: #2d2d2d; border: 2px solid #555; margin-top: 20px; display: block; margin-left: auto; margin-right: auto; font-family: Times New Roman; }
+        button { font-size: 18px; padding: 10px 20px; margin-top: 15px; cursor: pointer; background: #4caf50; color: white; border: none; border-radius: 5px; font-family: Space Mono; }
+        #timeText { color: #aaa; font-size: 16px; margin-top: 5px; }
+    </style>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1 id="status">😴 Sleeping Programmer</h1>
+    <div id="timeText">Time: 3:00 AM</div>
+    <canvas id="simCanvas" width="400" height="300"></canvas>
+    <button onclick="wakeUp()">⏰ Wake Up!</button>
+
+    <script>
+        const canvas = document.getElementById("simCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let isAwake = false;
+        let zzzY = 150;
+        let zzzAlpha = 1.0;
+        let clickTimer = 0;
+        let showClick = false;
+        let cursorBlink = 0;
+
+        function wakeUp() {
+            isAwake = true;
+            document.getElementById("status").innerText = "😲 SURPRISE! Alarm rings!";
+            document.getElementById("timeText").innerText = "Time: 10:00 AM (7 hours later!)";
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Desk
+            ctx.fillStyle = "#8B4513";
+            ctx.fillRect(130, 210, 220, 15);
+            ctx.fillRect(150, 225, 15, 65);
+            ctx.fillRect(315, 225, 15, 65);
+
+            // Draw Computer Monitor
+            ctx.fillStyle = "#333";
+            ctx.fillRect(200, 140, 90, 65);
+            ctx.fillStyle = "#111";
+            ctx.fillRect(205, 145, 80, 50);
+            
+            ctx.fillStyle = "#00ff00";
+            ctx.font = "10px monospace";
+            ctx.fillText("while(sleep) {", 210, 160);
+            ctx.fillText("  dream();", 210, 175);
+            ctx.fillText("}", 210, 190);
+
+            // Thinner blinking cursor on monitor
+            cursorBlink++;
+            if (Math.floor(cursorBlink / 30) % 2 === 0) {
+                ctx.fillRect(260, 182, 2, 10);
+            }
+
+            ctx.fillStyle = "#555";
+            ctx.fillRect(235, 205, 20, 5);
+            ctx.fillRect(242, 195, 6, 10);
+
+            // --- DETAILED ALARM CLOCK ---
+            // Clock legs
+            ctx.fillStyle = "#bbb";
+            ctx.fillRect(48, 220, 6, 10);
+            ctx.fillRect(66, 220, 6, 10);
+
+            // Bells on top
+            ctx.beginPath();
+            ctx.arc(52, 170, 8, Math.PI, 0, false);
+            ctx.arc(68, 170, 8, Math.PI, 0, false);
+            ctx.fillStyle = "#ff4444";
+            ctx.fill();
+
+            // Clock body
+            ctx.fillStyle = "#ff4444";
+            ctx.beginPath();
+            ctx.arc(60, 200, 25, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Clock face
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.arc(60, 200, 19, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Clock hands
+            ctx.strokeStyle = "#000";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(60, 200);
+            ctx.lineTo(60, 188);
+            ctx.moveTo(60, 200);
+            ctx.lineTo(70, 200);
+            ctx.stroke();
+
+            if (!isAwake) {
+                // Sleeping State (Wide body/arms resting on desk)
+                ctx.fillStyle = "#4a90e2";
+                ctx.fillRect(130, 185, 60, 25);
+                
+                // Head resting on arms
+                ctx.fillStyle = "#f5d0b1";
+                ctx.beginPath();
+                ctx.arc(155, 175, 15, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Floating "Zzz" animation
+                ctx.fillStyle = `rgba(255, 255, 255, ${zzzAlpha})`;
+                ctx.font = "20px sans-serif";
+                ctx.fillText("Zzz", 120, zzzY);
+                
+                zzzY -= 0.3;
+                zzzAlpha -= 0.005;
+                if (zzzY < 100) {
+                    zzzY = 150;
+                    zzzAlpha = 1.0;
+                }
+
+                // Random "-Click-" text pop-up logic
+                clickTimer++;
+                if (clickTimer > 240) {
+                    showClick = true;
+                    if (clickTimer > 150) {
+                        clickTimer = 0;
+                        showClick = false;
+                    }
+                }
+
+                if (showClick) {
+                    ctx.fillStyle = "#ffcc00";
+                    ctx.font = "14px sans-serif";
+                    ctx.fillText("-Click-", 220, 130);
+                }
+            } else {
+                // Awake State (Sitting up)
+                ctx.fillStyle = "#4a90e2";
+                ctx.fillRect(150, 170, 40, 40);
+                
+                // Head
+                ctx.fillStyle = "#f5d0b1";
+                ctx.beginPath();
+                ctx.arc(170, 155, 15, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Pop-up Alarm Text
+                ctx.fillStyle = "#ff4444";
+                ctx.font = "bold 16px sans-serif";
+                ctx.fillText("RING!", 95, 195);
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+  <script src="script.js"></script>
+</body>
+</html>
+
+/* style.css */
+body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #f7f5ff; color: #1f1538; }
+.app { width: min(520px, calc(100% - 2rem)); margin: 3rem auto; background: #fff; border: 2px solid #4d3f82; border-radius: 12px; padding: 1.25rem; }
+
+/* script.js */
+const result = document.getElementById('result');
+document.getElementById('btn')?.addEventListener('click', () => {
+  result.textContent = 'Your web preview is running!';
+});
